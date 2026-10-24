@@ -74,3 +74,14 @@ TEST_CASE("Build arguments redact split flags and assignments by default", "[scr
     REQUIRE(event.payload["args"] == nlohmann::json::array({
         "--password=<REDACTED>", "--api-key", "<REDACTED>", "GITHUB_TOKEN=<REDACTED>", "--jobs", "8", "test"}));
 }
+
+TEST_CASE("Snapshot scrubbing preserves capture timestamp precision", "[scrubber][snapshot]") {
+    dmfr::scrubber::Scrubber scrubber;
+    auto snapshot = dmfr::snapshot::SnapshotManifest::create("proj");
+    snapshot.timestamp = std::chrono::system_clock::time_point(std::chrono::seconds(100)) +
+        std::chrono::microseconds(123456);
+    const auto timestamp = snapshot.timestamp;
+    snapshot.env_vars["TOKEN"] = "dummy-secret";
+    REQUIRE(scrubber.scrub(snapshot));
+    REQUIRE(snapshot.timestamp == timestamp);
+}

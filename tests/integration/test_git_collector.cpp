@@ -1,5 +1,6 @@
 #include "dmfr/collectors/git_collector.h"
 #include "dmfr/common/paths.h"
+#include "dmfr/common/process.h"
 #include "dmfr/store/store.h"
 
 #include <catch2/catch_all.hpp>
@@ -38,9 +39,9 @@ TEST_CASE("Git commit hook produces an event in the store", "[collectors][git]")
     ::setenv("HOME", tmp_home.string().c_str(), 1);
 
     // Initialize a git repository.
-    std::system(("git -C " + tmp_repo.string() + " init").c_str());
-    std::system(("git -C " + tmp_repo.string() + " config user.email \"test@example.com\"").c_str());
-    std::system(("git -C " + tmp_repo.string() + " config user.name \"Test User\"").c_str());
+    REQUIRE(dmfr::process::foreground({"git", "-C", tmp_repo.string(), "init"}) == 0);
+    REQUIRE(dmfr::process::foreground({"git", "-C", tmp_repo.string(), "config", "user.email", "test@example.com"}) == 0);
+    REQUIRE(dmfr::process::foreground({"git", "-C", tmp_repo.string(), "config", "user.name", "Test User"}) == 0);
 
     // Install the DMFR hook.
     REQUIRE(dmfr::collectors::GitCollector::install_hooks(tmp_repo));
@@ -57,8 +58,8 @@ TEST_CASE("Git commit hook produces an event in the store", "[collectors][git]")
         std::ofstream out(tmp_repo / "file.txt");
         out << "hello\n";
     }
-    std::system(("git -C " + tmp_repo.string() + " add file.txt").c_str());
-    std::system(("git -C " + tmp_repo.string() + " -c core.hooksPath=.git/hooks commit -m \"test commit\"").c_str());
+    REQUIRE(dmfr::process::foreground({"git", "-C", tmp_repo.string(), "add", "file.txt"}) == 0);
+    REQUIRE(dmfr::process::foreground({"git", "-C", tmp_repo.string(), "-c", "core.hooksPath=.git/hooks", "commit", "-m", "test commit"}) == 0);
 
     // Give the hook a moment to finish.
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -89,6 +90,7 @@ TEST_CASE("Git commit hook produces an event in the store", "[collectors][git]")
 
     // Cleanup.
     ::setenv("HOME", orig_home.c_str(), 1);
+    ::setenv("PATH", orig_path.c_str(), 1);
     fs::remove_all(tmp_home, ec);
     fs::remove_all(tmp_repo, ec);
 }

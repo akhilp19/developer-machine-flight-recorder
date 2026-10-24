@@ -637,7 +637,7 @@ int main(int argc, char** argv) {
         try {
             auto response = send_command(nlohmann::json{{"cmd", "status"}});
             fmt::print("{}\n", response.dump(2));
-        } catch (const dmfr::DmfrError& e) {
+        } catch (const dmfr::DmfrError&) {
             fmt::print("DMFR daemon is not running.\n");
             return 1;
         }

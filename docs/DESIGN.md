@@ -373,7 +373,6 @@ dmfr/
     "catch2",
     "fmt",
     "spdlog",
-    "openssl",
     "arrow"
   ]
 }

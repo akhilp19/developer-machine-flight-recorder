@@ -41,7 +41,6 @@ find_package(SQLite3 REQUIRED)
 find_package(CLI11 CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-find_package(OpenSSL REQUIRED)
 
 # Arrow/Parquet are optional for Parquet export in v1
 find_package(Arrow QUIET)

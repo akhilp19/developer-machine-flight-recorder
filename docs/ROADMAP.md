@@ -27,7 +27,7 @@ The DMFR agent and CLI will be built in **C++** to maximize control over resourc
 | **CLI parsing** | CLI11 |
 | **Local data store** | SQLite via modern C++ wrapper, plus Parquet export via Apache Arrow C++ |
 | **IPC (agent ↔ CLI)** | Unix domain sockets (POSIX). Windows named pipes are a Phase 1 follow-up. |
-| **Crypto / scrubbing** | libsodium or OpenSSL |
+| **Scrubbing** | C++ key/argument rules and compiled regular expressions; no crypto dependency currently required |
 | **Testing** | Catch2 |
 | **Static analysis** | Clang Static Analyzer, cppcheck, AddressSanitizer / ThreadSanitizer |
 | **Packaging** | Homebrew (macOS), .deb/.rpm + AUR (Linux), MSI/WinGet (Windows) |

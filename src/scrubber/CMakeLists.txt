@@ -11,7 +11,6 @@ target_link_libraries(dmfr_scrubber
     PUBLIC
         dmfr::common
         dmfr::snapshot
-        OpenSSL::SSL
         fmt::fmt
 )
 

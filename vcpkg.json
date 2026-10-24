@@ -8,7 +8,6 @@
     "cli11",
     "fmt",
     "spdlog",
-    "openssl",
     "catch2"
   ],
   "features": {

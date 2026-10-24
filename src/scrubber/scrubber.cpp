@@ -52,9 +52,13 @@ void Scrubber::apply_config(const dmfr::config::ScrubberConfig& config) {
 }
 
 bool Scrubber::scrub(dmfr::snapshot::SnapshotManifest& manifest) {
+    // JSON timestamps use second precision; privacy processing must not change
+    // capture ordering when several builds occur within the same second.
+    const auto timestamp = manifest.timestamp;
     auto payload = manifest.to_json();
     bool changed = scrub_payload(payload);
     manifest = dmfr::snapshot::SnapshotManifest::from_json(payload);
+    manifest.timestamp = timestamp;
     return changed;
 }
 
