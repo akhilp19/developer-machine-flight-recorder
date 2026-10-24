@@ -40,7 +40,7 @@ std::vector<std::string> words(const std::string& command) {
     for (std::string word; stream >> word;) argv.push_back(word);
     return argv;
 }
-std::string run_command(const char* cmd) {
+[[maybe_unused]] std::string run_command(const char* cmd) {
     auto result = dmfr::process::capture(words(cmd));
     return result.ok() ? result.output : "";
 }
@@ -74,7 +74,11 @@ std::chrono::system_clock::time_point parse_time(const std::string& str) {
     if (ss.fail()) {
         return std::chrono::system_clock::time_point{};
     }
+#ifdef _WIN32
+    std::time_t t = _mkgmtime(&tm);
+#else
     std::time_t t = timegm(&tm);
+#endif
     return std::chrono::system_clock::time_point(std::chrono::seconds(t));
 }
 

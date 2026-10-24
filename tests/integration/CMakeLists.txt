@@ -2,10 +2,14 @@ add_executable(dmfr_integration_tests
     test_store.cpp
     test_snapshot.cpp
     test_diff.cpp
-    test_git_collector.cpp
-    test_build_collector.cpp
     test_build_workflow.cpp
 )
+
+# Shell hooks and wrapper integration are POSIX-only. Portable store/snapshot/diff
+# tests still run on Windows while native execution/IPC are not implemented.
+if(UNIX)
+    target_sources(dmfr_integration_tests PRIVATE test_git_collector.cpp test_build_collector.cpp)
+endif()
 
 target_link_libraries(dmfr_integration_tests
     PRIVATE

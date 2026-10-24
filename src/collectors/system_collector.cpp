@@ -1,4 +1,5 @@
 #include "dmfr/collectors/system_collector.h"
+#include "dmfr/common/process.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -19,28 +20,6 @@ extern char** environ;
 #endif
 
 namespace dmfr::collectors {
-
-namespace {
-
-std::string run_command(const char* cmd) {
-    std::array<char, 256> buffer{};
-    std::string result;
-    FILE* pipe = ::popen(cmd, "r");
-    if (!pipe) {
-        return "";
-    }
-    while (::fgets(buffer.data(), buffer.size(), pipe) != nullptr) {
-        result += buffer.data();
-    }
-    ::pclose(pipe);
-    // Trim trailing newline/whitespace.
-    while (!result.empty() && (result.back() == '\n' || result.back() == '\r' || result.back() == ' ')) {
-        result.pop_back();
-    }
-    return result;
-}
-
-} // namespace
 
 SystemCollector::SystemCollector()
     : last_sample_(std::chrono::steady_clock::now()),
@@ -93,7 +72,7 @@ std::vector<Event> SystemCollector::sample_os() {
 
 #if defined(__APPLE__)
     name = "macOS";
-    version = run_command("sw_vers -productVersion");
+    version = dmfr::process::capture({"sw_vers", "-productVersion"}).output;
 #elif defined(__linux__)
     name = "Linux";
     std::ifstream in("/etc/os-release");

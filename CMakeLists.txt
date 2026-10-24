@@ -18,6 +18,7 @@ option(DMFR_TREAT_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 
 # Global compile options
 if(MSVC)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS NOMINMAX)
     add_compile_options(/W4)
     if(DMFR_TREAT_WARNINGS_AS_ERRORS)
         add_compile_options(/WX)

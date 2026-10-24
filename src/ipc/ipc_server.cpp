@@ -18,6 +18,7 @@
 namespace dmfr::ipc {
 
 namespace {
+#if defined(__unix__) || defined(__APPLE__)
 
 bool write_all(int fd, const char* data, size_t len) {
     size_t written = 0;
@@ -43,6 +44,7 @@ bool read_exact(int fd, char* buffer, size_t len) {
     return true;
 }
 
+#endif
 } // namespace
 
 Server::Server(std::string endpoint) : endpoint_(std::move(endpoint)) {}
@@ -147,6 +149,7 @@ void Server::run() {
 }
 
 void Server::handle_client(int client_fd) {
+#if defined(__unix__) || defined(__APPLE__)
     uint32_t len_net = 0;
     if (!read_exact(client_fd, reinterpret_cast<char*>(&len_net), sizeof(len_net))) {
         return;
@@ -180,6 +183,9 @@ void Server::handle_client(int client_fd) {
         return;
     }
     write_all(client_fd, resp_str.data(), resp_str.size());
+#else
+    (void)client_fd;
+#endif
 }
 
 } // namespace dmfr::ipc

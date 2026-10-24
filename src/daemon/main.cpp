@@ -21,6 +21,8 @@
 
 #if defined(__unix__) || defined(__APPLE__)
 #include <unistd.h>
+#elif defined(_WIN32)
+#include <process.h>
 #endif
 
 
@@ -35,6 +37,13 @@ void signal_handler(int signal) {
 }
 
 namespace {
+int process_id() {
+#ifdef _WIN32
+    return ::_getpid();
+#else
+    return static_cast<int>(::getpid());
+#endif
+}
 
 bool write_pid_file(const fs::path& path) {
     std::error_code ec;
@@ -47,7 +56,7 @@ bool write_pid_file(const fs::path& path) {
     if (!ofs) {
         return false;
     }
-    ofs << ::getpid() << "\n";
+    ofs << process_id() << "\n";
     return ofs.good();
 }
 
@@ -176,7 +185,7 @@ int main(int argc, char* argv[]) {
 
         if (cmd == "status") {
             response["status"] = "running";
-            response["pid"] = ::getpid();
+            response["pid"] = process_id();
             response["collectors"] = collector_manager.is_running();
 
             dmfr::store::Query count_query;

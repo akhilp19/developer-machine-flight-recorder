@@ -18,6 +18,7 @@
 namespace dmfr::ipc {
 
 namespace {
+#if defined(__unix__) || defined(__APPLE__)
 
 bool write_all(int fd, const char* data, size_t len) {
     size_t written = 0;
@@ -43,6 +44,7 @@ bool read_exact(int fd, char* buffer, size_t len) {
     return true;
 }
 
+#endif
 } // namespace
 
 Client::Client(std::string endpoint) : endpoint_(std::move(endpoint)) {}
@@ -92,6 +94,7 @@ std::optional<nlohmann::json> Client::send(const nlohmann::json& request) {
         return std::nullopt;
     }
 
+#if defined(__unix__) || defined(__APPLE__)
     std::string payload = request.dump();
     if (payload.size() > UINT32_MAX) {
         return std::nullopt;
@@ -123,6 +126,10 @@ std::optional<nlohmann::json> Client::send(const nlohmann::json& request) {
     } catch (...) {
         return std::nullopt;
     }
+#else
+    (void)request;
+    return std::nullopt;
+#endif
 }
 
 bool Client::is_connected() const {
