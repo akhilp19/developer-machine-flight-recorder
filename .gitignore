@@ -1,0 +1,51 @@
+# Build artifacts
+/build/
+/build-test/
+cmake-build-*/
+out/
+install/
+
+# Local agent configuration
+.kimi-code/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# vcpkg
+vcpkg_installed/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled outputs
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+
+# DMFR runtime data
+.dmfr/
+*.log
+
+# Test outputs
+testing/
+coverage/
+*.profraw
+*.profdata
+
+# Package artifacts
+*.pkg
+*.dmg
+*.deb
+*.rpm
+*.msi
+*.zip

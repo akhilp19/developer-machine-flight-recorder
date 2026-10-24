@@ -1,0 +1,28 @@
+{
+  "name": "dmfr",
+  "version": "0.1.0",
+  "description": "Developer Machine Flight Recorder",
+  "dependencies": [
+    "nlohmann-json",
+    "sqlite3",
+    "cli11",
+    "fmt",
+    "spdlog",
+    "openssl",
+    "catch2"
+  ],
+  "features": {
+    "parquet": {
+      "description": "Enable Parquet export via Apache Arrow",
+      "dependencies": [
+        "arrow"
+      ]
+    },
+    "tests": {
+      "description": "Build unit and integration tests",
+      "dependencies": [
+        "catch2"
+      ]
+    }
+  }
+}

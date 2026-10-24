@@ -1,0 +1,156 @@
+#compdef dmfr
+
+_dmfr() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments -C \
+        '(-c --config)'{-c,--config}'[Configuration file path]:config:_files' \
+        '(-h --help)'{-h,--help}'[Show help]' \
+        '1: :->command' \
+        '*:: :->args'
+
+    case "$state" in
+        command)
+            local commands=(
+                'record:Run a build with a pre-build snapshot'
+                'diagnose:Compare a failure with the previous matching success'
+                'start:Start the DMFR daemon'
+                'stop:Stop the DMFR daemon'
+                'status:Show daemon status'
+                'query:Query the local store'
+                'timeline:Show events in chronological timeline'
+                'events:List recent events with pagination'
+                'show:Show event detail and surrounding context'
+                'snapshot:Capture or list environment snapshots'
+                'diff:Compare two snapshots or a snapshot against current state'
+                'bundle:Export a diagnostic evidence bundle'
+                'import-snapshot:Import a snapshot into the local store'
+                'export:Export events to file'
+                'retention:Run retention policy on the local store'
+                'config:Manage DMFR configuration'
+                'init:Initialize DMFR in a repository'
+                'hook:Send a hook event to the daemon'
+                'install-wrappers:Install build-tool wrapper scripts'
+            )
+            _describe -t commands 'dmfr command' commands
+            ;;
+        args)
+            case "$line[1]" in
+                record)
+                    _arguments '--tool[Logical tool name]:tool:' '*:command:_command_names'
+                    ;;
+                diagnose)
+                    _arguments '--event[Failed build event ID]:event:' '--project[Working directory]:directory:_directories'
+                    ;;
+                query)
+                    _arguments \
+                        '--from[Start Unix timestamp]:timestamp:' \
+                        '--to[End Unix timestamp]:timestamp:' \
+                        '--source[Filter by source]:source:' \
+                        '--type[Filter by event type]:type:' \
+                        '--project[Filter by project ID]:project:' \
+                        '--limit[Maximum number of events]:limit:'
+                    ;;
+                timeline)
+                    _arguments \
+                        '--from[Start Unix timestamp]:timestamp:' \
+                        '--to[End Unix timestamp]:timestamp:' \
+                        '--source[Filter by source]:source:' \
+                        '--type[Filter by event type]:type:' \
+                        '--project[Filter by project ID]:project:' \
+                        '--limit[Maximum number of events]:limit:' \
+                        '--group-by[Group by time, session, or project]:group:(time session project)'
+                    ;;
+                events)
+                    _arguments \
+                        '--from[Start Unix timestamp]:timestamp:' \
+                        '--to[End Unix timestamp]:timestamp:' \
+                        '--source[Filter by source]:source:' \
+                        '--type[Filter by event type]:type:' \
+                        '--project[Filter by project ID]:project:' \
+                        '--limit[Maximum number of events]:limit:' \
+                        '--offset[Number of events to skip]:offset:'
+                    ;;
+                show)
+                    _arguments \
+                        '1:event id:_files' \
+                        '--window[Context window in minutes]:minutes:' \
+                        '--context-limit[Maximum context events]:limit:' \
+                        '--same-project[Only show events from the same project]' \
+                        '--same-session[Only show events from the same session]'
+                    ;;
+                snapshot)
+                    _arguments \
+                        '--project[Project ID]:project:' \
+                        '--list[List recent snapshots]' \
+                        '--limit[Maximum number of snapshots]:limit:'
+                    ;;
+                diff)
+                    _arguments \
+                        '--snapshot[Snapshot ID to compare against current state]:snapshot:' \
+                        '--from-id[First snapshot ID]:snapshot:' \
+                        '--to-id[Second snapshot ID]:snapshot:' \
+                        '--file[Path to snapshot JSON file]:file:_files' \
+                        '--from[Start timestamp for event context]:timestamp:' \
+                        '--to[End timestamp for event context]:timestamp:' \
+                        '--project[Project ID]:project:' \
+                        '--project-path[Project root path]:path:_files -/'
+                    ;;
+                bundle)
+                    _arguments \
+                        '--from[Start timestamp for included events]:timestamp:' \
+                        '--to[End timestamp for included events]:timestamp:' \
+                        '--project[Project ID]:project:' \
+                        '--project-path[Project root path]:path:_files -/' \
+                        '--scrub[Scrub sensitive values before bundling]:bool:(true false)' \
+                        '--limit[Maximum number of events to include]:limit:'
+                    ;;
+                import-snapshot)
+                    _arguments \
+                        '1:snapshot bundle path:_files -/'
+                    ;;
+                export)
+                    _arguments \
+                        '1:output path:_files' \
+                        '--from[Start Unix timestamp]:timestamp:' \
+                        '--to[End Unix timestamp]:timestamp:' \
+                        '--source[Filter by source]:source:' \
+                        '--type[Filter by event type]:type:' \
+                        '--project[Filter by project ID]:project:' \
+                        '--limit[Maximum number of events]:limit:' \
+                        '--format[Export format]:format:(json parquet)'
+                    ;;
+                retention)
+                    _arguments \
+                        '--max-events[Maximum number of events to keep]:limit:' \
+                        '--max-age-days[Maximum age of events in days]:days:'
+                    ;;
+                config)
+                    local subcommands=(
+                        'init:Write a default configuration file'
+                        'show:Print the current configuration'
+                    )
+                    _describe -t commands 'dmfr config subcommand' subcommands
+                    ;;
+                hook)
+                    _arguments \
+                        '1:source:(git build)' \
+                        '--repo[Repository path]:repo:_files -/' \
+                        '--type[Hook type]:type:' \
+                        '--sha[Commit SHA]:sha:' \
+                        '--branch[Branch name]:branch:' \
+                        '--message[Commit message]:message:' \
+                        '--json[Raw JSON payload]:json:' \
+                        '--file[Path to JSON payload file]:file:_files'
+                    ;;
+                init)
+                    _arguments \
+                        '1:repository path:_files -/'
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_dmfr "$@"
