@@ -17,6 +17,7 @@ install/
 
 # vcpkg
 vcpkg_installed/
+/.vcpkg-binary-cache/
 
 # OS
 .DS_Store

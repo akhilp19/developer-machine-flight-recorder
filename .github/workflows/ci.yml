@@ -39,6 +39,19 @@ jobs:
         with:
           vcpkgJsonGlob: 'vcpkg.json'
 
+      - name: Restore vcpkg binary cache
+        uses: actions/cache@v4
+        with:
+          path: .vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('vcpkg.json') }}
+
+      - name: Configure vcpkg binary cache
+        shell: bash
+        run: |
+          cache_dir="$GITHUB_WORKSPACE/.vcpkg-binary-cache"
+          cmake -E make_directory "$cache_dir"
+          echo "VCPKG_BINARY_SOURCES=clear;files,$cache_dir,readwrite" >> "$GITHUB_ENV"
+
       - name: Configure CMake
         run: >
           cmake -B build
@@ -52,7 +65,7 @@ jobs:
         run: cmake --build build --config ${{ matrix.build_type }} --parallel
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure --config ${{ matrix.build_type }}
+        run: ctest --test-dir build --output-on-failure -C ${{ matrix.build_type }}
 
   static-analysis:
     name: Static Analysis
@@ -69,6 +82,19 @@ jobs:
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgJsonGlob: 'vcpkg.json'
+
+      - name: Restore vcpkg binary cache
+        uses: actions/cache@v4
+        with:
+          path: .vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('vcpkg.json') }}
+
+      - name: Configure vcpkg binary cache
+        shell: bash
+        run: |
+          cache_dir="$GITHUB_WORKSPACE/.vcpkg-binary-cache"
+          cmake -E make_directory "$cache_dir"
+          echo "VCPKG_BINARY_SOURCES=clear;files,$cache_dir,readwrite" >> "$GITHUB_ENV"
 
       - name: Configure CMake
         run: >
@@ -93,6 +119,19 @@ jobs:
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgJsonGlob: 'vcpkg.json'
+
+      - name: Restore vcpkg binary cache
+        uses: actions/cache@v4
+        with:
+          path: .vcpkg-binary-cache
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('vcpkg.json') }}
+
+      - name: Configure vcpkg binary cache
+        shell: bash
+        run: |
+          cache_dir="$GITHUB_WORKSPACE/.vcpkg-binary-cache"
+          cmake -E make_directory "$cache_dir"
+          echo "VCPKG_BINARY_SOURCES=clear;files,$cache_dir,readwrite" >> "$GITHUB_ENV"
 
       - name: Configure
         run: >

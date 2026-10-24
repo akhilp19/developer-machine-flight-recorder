@@ -21,6 +21,17 @@ extern char** environ;
 
 namespace dmfr::collectors {
 
+#ifdef __linux__
+namespace {
+std::string read_file_first_line(const char* path) {
+    std::ifstream input(path);
+    std::string line;
+    std::getline(input, line);
+    return line;
+}
+}
+#endif
+
 SystemCollector::SystemCollector()
     : last_sample_(std::chrono::steady_clock::now()),
       last_env_sample_(std::chrono::steady_clock::now()) {}
